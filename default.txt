@@ -1,0 +1,30 @@
+x1<-c(0.4,0.4,3.1,0.6,4.7,1.7,9.4,10.1,11.6,
+      12.6,10.9,23.1,23.1,21.6,23.1,1.9,26.8,29.9)
+x2<-c(52,23,19,34,24,65,44,31,29,
+      58,37,46,50,44,56,36,58,51)
+x3<-c(158,163,37,157,59,123,46,117,173,
+      112,111,114,134,73,168,143,202,124)
+y<-c(64,60,71,61,54,77,81,93,93,
+     51,76,96,77,93,95,54,168,99)
+fit<- lm(y~x1+x2+x3)
+fit
+summary(fit)
+names(fit)
+par(mfrow=c(2,2))
+plot(fit)
+anova(fit)
+library()
+
+
+fit2<- step(fit)
+summary(fit2)
+a<- data.frame(y,x1,x2,x3)
+a<- a[-17,]
+fit3<- lm(y~.,data=a)
+summary(fit3)
+fit4<- step(fit3)
+summary(fit4)
+fit5<- lm(y~x1+x2)
+summary(fit5)
+plot(a$x1,a$y)
+plot(a$x2,a$y)
