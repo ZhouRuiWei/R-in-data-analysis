@@ -1,0 +1,13 @@
+#最简单的方差分析
+library(multcomp)
+attach(litter)
+head(litter)
+table(dose)
+aggregate(weight,by=list(dose),FUN=mean)#aggregate(weight~dose,FUN=mean)
+fit<-aov(weight~gesttime+dose)
+summary(fit)
+fit
+detach(litter)
+fit2<-aov(weight~gesttime*dose,data=litter)
+summary(fit2)
+fit2
