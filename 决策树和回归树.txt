@@ -1,4 +1,4 @@
-###决策树（包括回归树和）
+###决策树（包括回归树）
 ##两个算法一个是cart分类回归树另一个是c4.5
 ##先读取数据
 car.test.frame<- read.csv("car.test.frame.csv",header = TRUE,sep = ";")
