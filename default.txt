@@ -1,0 +1,69 @@
+###决策树（包括回归树和）
+##两个算法一个是cart分类回归树另一个是c4.5
+##先读取数据
+car.test.frame<- read.csv("car.test.frame.csv",header = TRUE,sep = ";")
+head(car.test.frame)
+str(car.test.frame)
+
+car.test.frame$Mileage<- 100*4.546/(1.6*car.test.frame$Mileage)#换算油耗
+names(car.test.frame)[4]<- c("cost")
+str(car.test.frame)
+summary(car.test.frame)
+car.test.frame$group_cost<- 0
+car.test.frame<- within(car.test.frame,{
+  group_cost[cost>9&cost<11.6]<- "b"
+  group_cost[cost>=11.6]<- "a"
+  group_cost[cost<=9]<- "c"
+  }
+  )
+a<- round(sum(car.test.frame$group_cost=="a")/4)
+b<- round(sum(car.test.frame$group_cost=="b")/4)
+c<- round(sum(car.test.frame$group_cost=="c")/4)
+a;b;c
+library(sampling)
+sub<- strata(car.test.frame,stratanames = "group_cost",size=c(a,b,c),method = "srswor")
+train_car<- car.test.frame[-sub$ID_unit,]
+test_car<- car.test.frame[sub$ID_unit,]
+train_car
+library(rpart)
+formula<- cost~Price  + Country+ Reliability+   Type+ Weight+ Disp.+  HP
+rp_car_reg<- rpart(formula,data = train_car,method = "anova")
+print(rp_car_reg)   #星号代表不是节点
+printcp(rp_car_reg)
+summary(rp_car_reg)
+rp_car_reg1<- rpart(formula,data = train_car,method = "anova",minsplit=10)
+print(rp_car_reg1)
+summary(rp_car_reg1)
+rp_car_reg2<- rpart(formula,data = train_car,method = "anova",cp=0.1)#还有maxdepth
+print(rp_car_reg2)
+rp_car_reg3<- prune.rpart(rp_car_reg,cp=0.1)
+rp_car_reg3
+library(rpart.plot)
+rpart.plot(rp_car_reg1)#最底层的叶子代表对油耗的预测
+rpart.plot(rp_car_reg1,type = 4)   #还是这种好看点
+rpart.plot(rp_car_reg1,type = 1)
+rpart.plot(rp_car_reg1,type = 2)
+rpart.plot(rp_car_reg1,type = 3)
+rpart.plot(rp_car_reg1,branch = 1,type = 4)
+rpart.plot(rp_car_reg,type = 4,fallen.leaves = TRUE)
+
+formula1<- group_cost ~ Price+Country+Reliability+Type+Weight+Disp.+HP
+rp_car_cla<- rpart(formula1,train_car,method = "class",minsplit=5)
+rp_car_cla
+rpart.plot(rp_car_cla,type = 4,fallen.leaves = TRUE)
+
+pre_car_cla<- predict(rp_car_cla,test_car,type = "class")
+table(pre_car_cla,test_car$group_cost)
+pre_car_cla   #小样本容易误差过大
+
+##c4.5算法
+library(RWeka)
+train_car$group_cost<- as.factor(train_car$group_cost)
+formula1<- group_cost ~ Price+Country+Reliability+Type+Weight+Disp.+HP
+c45<- J48(formula1,train_car)
+c45
+summary(c45)
+c45_1<- J48(formula1,train_car,control = Weka_control(M=3))
+c45_1
+library(partykit)
+plot(c45)
