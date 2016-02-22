@@ -1,0 +1,30 @@
+attach(mtcars)
+plot(wt,mpg)
+abline(lm(mpg~wt))
+lines(lowess(wt,mpg))
+detach(mtcars)
+library(car)
+scatterplotMatrix(~mpg+disp+drat+wt|cyl,data=mtcars,
+                  spread = FALSE,diagonal="histogram")
+
+Orange
+str(Orange)
+head(Orange)
+Orange$Tree<- as.numeric(Orange$Tree)
+n<- max(Orange$Tree)
+x<- range(Orange$age)
+y<- range(Orange$circumference)
+plot(x,y,
+     type = "n",
+     xlab="age",
+     ylab="circumference")
+colors<- rainbow(n)
+for (i in 1:n){
+  tree<- subset(Orange,Tree==i)
+  lines(tree$age,tree$circumference,type="b",
+        lwd=2,
+        lty=i,
+        col=colors[i],pch=18+i)
+}
+legend(x[1],y[2],
+       1:n,cex=0.5,col = colors,pch=c(18:22),lty=c(1:5),title="tree")
