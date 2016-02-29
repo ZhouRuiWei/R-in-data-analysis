@@ -1,0 +1,27 @@
+findwords<- function(tf)
+{
+  txt<- scan(tf,"")
+  wl<- list()
+  for(i in 1: length(txt))
+  {
+    wrd<- txt[i]
+    wl[[wrd]]<- c(wl[[wrd]],i)
+  }
+  return(wl)
+}
+word<- findwords('word.txt')
+
+cstw<- function(list)
+{
+  word<- vector()
+  name<- names(list)
+  for(i in 1 : length(list))
+  {
+    order<- list[[i]]
+    word[order]<- name[i]
+  }
+  return(word)
+}
+
+words<- cstw(word)
+
