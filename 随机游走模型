@@ -1,0 +1,21 @@
+#检验随机游走模型的自相关性
+rm(list = ls())
+set.seed(20)
+n<- 100
+p<- 0.5
+u0<- rbinom(n,1,p)
+u1<- (u0-0.5)*2   #?
+x<- c(0,cumsum(u1))
+plot(diff(x),type = "l",main = "",xlab = "时间",ylab = "差分值",xlim=c(0,100),
+     cex.axis=1.5,cex.lab="1.5")
+opar=par(no.readonly = TRUE)
+par(mfrow=c(2,1),cex.axis=1.5,cex.lab=1.5,mar=c(1,2,3,4))
+#win.graph(width=8, height=2.5,pointsize=8) 用这个函数是另外新建一个页面 
+#再par参数中加mar=c(...)参数来控制边距，数字分别代表下左上右的边距（以行为单位）
+acf(x,main="随机游走模型")
+#win.graph(width=8, height=2.5,pointsize=8)
+acf(diff(x),main="一阶差分序列")
+par(opar)
+
+Box.test(diff(x),lag = 5,type = c("Box-Pierce"))
+Box.test(diff(x),lag = 5,type = c("Ljung-Box"))
