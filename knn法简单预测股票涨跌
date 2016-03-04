@@ -1,0 +1,27 @@
+##用knn算法预测股票涨跌
+library(class)
+library(dplyr)
+library(lubridate)
+set.seed(100)
+
+stocks <- read.csv('stocks.csv')
+head(stocks)
+str(stocks)
+stocks$Date <- ymd(stocks$Date)  ##将时间变为时间序列格式而不是因子
+stocksTrain <- year(stocks$Date) < 2014   ##提取2014年以前的用来做测试集
+predictors <- cbind(lag(stocks$Apple, default = 210.73), 
+                    lag(stocks$Google, default = 619.98), 
+                    lag(stocks$MSFT, default = 30.48))
+prediction <- knn(predictors[stocksTrain, ], 
+                  predictors[!stocksTrain, ], 
+                  stocks$Increase[stocksTrain], k = 1)
+table(prediction,stocks$Increase[!stocksTrain])
+mean(prediction == stocks$Increase[!stocksTrain])
+##测试不同的k值差异
+accuracy <- rep(0, 10)
+k <- 1:10
+for(x in k){
+  prediction <- knn(predictors[stocksTrain, ], predictors[!stocksTrain, ],
+                    stocks$Increase[stocksTrain], k = x)
+  accuracy[x] <- mean(prediction == stocks$Increase[!stocksTrain])
+}
